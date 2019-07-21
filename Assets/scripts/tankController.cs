@@ -6,13 +6,15 @@ public abstract class Tank : MonoBehaviour
 {
     public int speed = 5;
     protected bool isMoving = false;
-    spawnController spawn;
+    [SerializeField]
+    private SpawnController spawn;
+    [SerializeField]
+    private int actualHealth;
+    private int currentHealth;
 
     protected IEnumerator MoveHorizontal(float movementHorizontal, Rigidbody2D rb2d)
     {
         isMoving = true;
-
-        //transform.position = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
 
         Quaternion rotation = Quaternion.Euler(0, 0, -movementHorizontal * 90f);
         transform.rotation = rotation;
@@ -39,9 +41,6 @@ public abstract class Tank : MonoBehaviour
     protected IEnumerator MoveVertical(float movementVertical, Rigidbody2D rb2d)
     {
         isMoving = true;
-
-        //transform.position = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y));
-
         Quaternion rotation;
 
         if (movementVertical < 0)
@@ -76,9 +75,6 @@ public abstract class Tank : MonoBehaviour
 
     }
 
-    [SerializeField]
-    int actualHealth;
-    int currentHealth;
     void Start()
     {
         SetHealth();
@@ -97,18 +93,8 @@ public abstract class Tank : MonoBehaviour
     }
     void Death()
     {
-        if (gameObject.CompareTag("Player"))
-        {
-            //Spawn Player
-
-        }
-        else
-        {
-            if (gameObject.CompareTag("Enemy"))
-            {
-                //spawn.SpawnNewTank();
-            }
-        }
-        Destroy(gameObject);
+        spawn.AddTankToSpawnQueue(gameObject);
+        gameObject.SetActive(false);
+        isMoving = false;
     }
 }

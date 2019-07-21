@@ -2,32 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class gunController : MonoBehaviour
+public class GunController : MonoBehaviour
 {
+    private int i = 0;
     [SerializeField]
-    GameObject projectile;
-    GameObject canonBall, fire;
-    projectileController canon;
+    GameObject[] projectiles;
+    GameObject[] canonBall;
+    ProjectileController canon;
     [SerializeField]
-    int speed;
+    private int speed;
+
     void Start()
     {
-        canonBall = Instantiate(projectile, transform.position, transform.rotation) as GameObject;
-        canon = canonBall.GetComponent<projectileController>();
-        canon.speed = speed;
-        //fire = transform.GetChild(0).gameObject;
-    }
-    public void Fire()
-    {
-        if (canonBall.activeSelf == false)
+        foreach (GameObject projectile in projectiles)
         {
-            canonBall.transform.position = transform.position;
-            canonBall.transform.rotation = transform.rotation;
-            canonBall.SetActive(true);
+            canon = projectile.GetComponent<ProjectileController>();
+            canon.speed = speed;
         }
     }
+    public void Fire()
+    {   if (i >= projectiles.Length)
+        {
+            i = 0;
+        }
+
+        if (projectiles[i].activeSelf == false)
+        {
+            projectiles[i].transform.position = transform.position;
+            projectiles[i].transform.rotation = transform.rotation;
+            projectiles[i].SetActive(true);
+        }
+        i++;
+        }
+
+
     private void OnDestroy()
     {
-        if (canonBall != null) canon.DestroyProjectile();
+        if (projectiles[i] != null) canon.DestroyProjectile();
     }
 }

@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class enemyController : Tank
+public class EnemyController : Tank
 {
-    Rigidbody2D rb2d;
-    float h, v;
+    private Rigidbody2D rb2d;
+    private float h, v;
     [SerializeField]
-    LayerMask blockingLayer;
-    enum Direction { Up, Down, Left, Right };
+    private LayerMask bordersLayer;
+    [SerializeField]
+    private LayerMask enemyLayer;
 
-    void Start()
+    private enum Direction { Up, Down, Left, Right };
+
+    private void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         RandomDirection();
@@ -21,20 +24,20 @@ public class enemyController : Tank
         CancelInvoke("RandomDirection");
 
         List<Direction> lottery = new List<Direction>();
-        if (!Physics2D.Linecast(transform.position, (Vector2)transform.position + new Vector2(1, 0), blockingLayer))
+        if (!HasObstacles(new Vector2(1, 0)))
         {
             lottery.Add(Direction.Right);
         }
-        if (!Physics2D.Linecast(transform.position, (Vector2)transform.position + new Vector2(-1, 0), blockingLayer))
+        if (!HasObstacles(new Vector2(-1, 0)))
         {
             lottery.Add(Direction.Left);
         }
-        if (!Physics2D.Linecast(transform.position, (Vector2)transform.position + new Vector2(0, 1), blockingLayer))
+        if (!HasObstacles(new Vector2(0, 1)))
         {
             lottery.Add(Direction.Up);
         }
-        if (!Physics2D.Linecast(transform.position, (Vector2)transform.position + new Vector2(0, -1), blockingLayer))
-        {
+        if (!HasObstacles(new Vector2(0, -1)))
+        { 
             lottery.Add(Direction.Down);
         }
 
@@ -59,16 +62,28 @@ public class enemyController : Tank
             v = 0;
             h = -1;
         }
+
         Invoke("RandomDirection", Random.Range(3, 6));
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        RandomDirection();
+            RandomDirection();
     }
-
     private void FixedUpdate()
     {
         if (v != 0 && isMoving == false) StartCoroutine(MoveVertical(v, rb2d));
         else if (h != 0 && isMoving == false) StartCoroutine(MoveHorizontal(h, rb2d));
+    }
+
+    private bool HasObstacles(Vector2 direction)
+    {
+    	return CheckLayerInDirection(direction, bordersLayer) || CheckLayerInDirection(direction, enemyLayer);
+    }
+
+    private bool CheckLayerInDirection(Vector2 direction, LayerMask layer)
+    {
+        Vector2 startPosition = (Vector2)transform.position + direction * 1f;
+        Vector2 endPosition = startPosition + direction;
+    	return Physics2D.Linecast(startPosition, endPosition, layer);
     }
 }

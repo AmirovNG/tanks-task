@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class projectileController : MonoBehaviour
+public class ProjectileController : MonoBehaviour
 {
     [SerializeField]
-    bool toBeDestroyed = false;
+    private bool toBeDestroyed = false;
     Tilemap tilemap;
     public int speed = 7;
     Rigidbody2D rb2d;
@@ -37,15 +37,12 @@ public class projectileController : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-    //function called from Tank to destroy the projectile when the tank is destroyed
     public void DestroyProjectile()
     {
-        //if the projectile is already inactive, destroy the projectile gameobject
         if (gameObject.activeSelf == false)
         {
             Destroy(this.gameObject);
         }
-        //set flag toBeDestroyed so that if projectile is still active checking the flag toBeDestroyed during onDisable to destroy the projectile
         toBeDestroyed = true;
     }
 }

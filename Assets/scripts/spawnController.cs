@@ -2,32 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class spawnController : MonoBehaviour
+public class SpawnController : MonoBehaviour
 {
-    GameObject[] tanks;
-    GameObject tank;
     [SerializeField]
-    bool isPlayer;
-    [SerializeField]
-    GameObject PlayerTank, EnemyTank;
+    GameObject[] SpawnPoints;
     void Start()
-    {
-        if (isPlayer)
-        {
-            tanks = new GameObject[1] { PlayerTank };
-        }
-        else
-        {
-            tanks = new GameObject[1] { EnemyTank };
-        }
-    }
-    public void StartSpawning()
-    {
-        tank = Instantiate(tanks[Random.Range(0, tanks.Length)], transform.position, transform.rotation);
+    {   
     }
 
-    public void SpawnNewTank()
+    private IEnumerator Respawn(GameObject tank)
     {
-        if (tank != null) tank.SetActive(true);
+            yield return new WaitForSeconds(1);
+                GameObject randomSpawnPoint = SpawnPoints[Random.Range(0, SpawnPoints.Length)];
+                tank.transform.position = randomSpawnPoint.transform.position;
+                tank.SetActive(true);
+    }
+    public void AddTankToSpawnQueue(GameObject tank)
+    {
+        StartCoroutine(Respawn(tank));
     }
 }

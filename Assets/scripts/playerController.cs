@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class playerController : Tank
+public class PlayerController : Tank
 {
-    float h, v;
+    private float h, v;
     Rigidbody2D rb2d;
-    gunController gun;
+    GunController gun;
     void Start()
     {
-        gun = GetComponentInChildren<gunController>();
+        gun = GetComponentInChildren<GunController>();
         rb2d = GetComponent<Rigidbody2D>();
     }
 
@@ -26,6 +26,14 @@ public class playerController : Tank
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             gun.Fire();
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        rb2d.velocity = Vector2.zero;
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage();
         }
     }
 }
